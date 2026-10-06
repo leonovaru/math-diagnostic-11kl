@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Диагностический тест по математике | 11 класс (1–10 класс)</title>
+  <title>Диагностический тест по математике | 11 класс</title>
   
   <!-- MathJax SVG с локальным кешем шрифтов -->
   <script>
@@ -131,36 +131,59 @@
     mjx-container[jax="SVG"] svg { overflow: visible !important; vertical-align: middle !important; }
 
     /* ========================================================= */
-    /* 1. ЭКРАННЫЙ ИНТЕРФЕЙС ОТОБРАЖЕНИЯ РЕЗУЛЬТАТОВ (ДЛЯ УЧЕНИКА) */
+    /* 1. ЭКРАННЫЙ ИНТЕРФЕЙС ОТОБРАЖЕНИЯ РЕЗУЛЬТАТОВ (АДАПТИВНЫЙ) */
     /* ========================================================= */
-    #result-wrapper { max-width: 850px; margin: 20px auto; display: none; padding: 0 15px; }
+    #result-wrapper { max-width: 900px; margin: 20px auto; display: none; padding: 0 15px; box-sizing: border-box; }
     
     .screen-header-card {
       background: var(--primary-dark);
       color: #ffffff;
-      padding: 20px;
+      padding: 24px;
       border-radius: 12px;
       margin-bottom: 20px;
       text-align: center;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
-    .screen-header-card h2 { margin: 0 0 6px 0; font-size: 1.3em; }
-    .screen-header-card p { margin: 0 0 12px 0; color: #93c5fd; font-size: 1em; }
+    .screen-header-card h2 { margin: 0 0 8px 0; font-size: 1.5em; }
+    .screen-header-card p { margin: 0 0 15px 0; color: #93c5fd; font-size: 1em; }
     .screen-score-badge {
       display: inline-block;
       background: rgba(255, 255, 255, 0.15);
-      padding: 8px 16px;
+      padding: 8px 18px;
       border-radius: 20px;
       font-weight: bold;
       color: #60a5fa;
       font-size: 1.1em;
     }
 
-    .screen-section-title { color: var(--primary-dark); border-bottom: 2px solid var(--primary-blue); padding-bottom: 8px; font-size: 1.2em; margin: 25px 0 15px 0; }
+    .screen-section-title { color: var(--primary-dark); border-bottom: 2px solid var(--primary-blue); padding-bottom: 8px; font-size: 1.25em; margin: 30px 0 15px 0; }
     
-    .screen-summary-block { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 15px; margin-bottom: 10px; }
-    .screen-summary-block h4 { margin: 0 0 6px 0; color: var(--primary-dark); font-size: 0.98em; }
-    .screen-summary-block ul { margin: 0; padding-left: 18px; font-size: 0.9em; color: #475569; }
+    /* Сводка блоков на экране - теперь идентична отчету */
+    .screen-block-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 18px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      margin-bottom: 6px;
+      font-weight: 700;
+      font-size: 0.98em;
+    }
+    .screen-block-bar.green { background-color: #e8f5e9; border-color: #a5d6a7; color: #1b5e20; }
+    .screen-block-bar.yellow { background-color: #fffde7; border-color: #ffe082; color: #795548; }
+    .screen-block-bar.red { background-color: #fbe9e7; border-color: #ffab91; color: #8c1d40; }
+
+    .screen-block-percent { font-size: 1.05em; font-weight: 800; }
+
+    .screen-block-ul {
+      margin: 0 0 16px 0;
+      padding-left: 24px;
+      font-size: 0.9em;
+      line-height: 1.5;
+      color: #334155;
+    }
+    .screen-block-ul li { margin-bottom: 3px; }
 
     .screen-card {
       background: #ffffff;
@@ -175,11 +198,31 @@
     .screen-card.incorrect { border-left-color: #d97706; background: #fffbeb; }
     .screen-card.skipped { border-left-color: #dc2626; background: #fef2f2; }
 
-    .screen-q { font-weight: 600; margin-bottom: 8px; color: #1e293b; font-size: 0.95em; line-height: 1.5; }
-    .screen-ans { font-size: 0.9em; color: #475569; line-height: 1.5; margin-bottom: 8px; }
+    .screen-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .screen-q { font-weight: 600; color: #1e293b; font-size: 0.98em; line-height: 1.45; flex: 1; }
+    .screen-ans { font-size: 0.9em; color: #475569; line-height: 1.5; }
+
+    .screen-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75em;
+      font-weight: bold;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .screen-badge-ok { background: #dcfce7; color: #15803d; }
+    .screen-badge-err { background: #fef3c7; color: #b45309; }
+    .screen-badge-skip { background: #fee2e2; color: #b91c1c; }
 
     /* ========================================================= */
-    /* 2. СКРЫТЫЙ СТРОГИЙ A4-МАКЕТ (ИЗОЛИРОВАН ОТ МОБИЛЬНЫХ СТИЛЕЙ) */
+    /* 2. СКРЫТЫЙ СТРОГИЙ A4-МАКЕТ (НЕ МЕНЯЛСЯ)                  */
     /* ========================================================= */
     #pdf-export-container {
       position: fixed;
@@ -224,7 +267,6 @@
       margin-bottom: 16px;
     }
 
-    /* Блоки карты знаний */
     .pdf-block-bar {
       display: flex;
       justify-content: space-between;
@@ -357,7 +399,7 @@
   </div>
 </div>
 
-<!-- 1. РЕЗУЛЬТАТЫ НА ЭКРАНЕ (ДЛЯ УЧЕНИКА) -->
+<!-- 1. РЕЗУЛЬТАТЫ НА ЭКРАНЕ (ДЛЯ УЧЕНИКА - АДАПТИРОВАНЫ ПОД ОФОРМЛЕНИЕ ОТЧЕТА) -->
 <div id="result-wrapper">
   <div style="text-align: right; margin-bottom: 15px;">
     <button id="downloadPdfBtn" class="btn-pdf" disabled onclick="downloadPDF()">⏳ Формирование PDF...</button>
@@ -761,7 +803,8 @@
             });
             html += `</div>`;
           } else {
-            html += `<input type="text" class="text-input" id="${qId}" placeholder="Введите ответ" oninput="saveStateToStorage()">`;
+            /* Ограничение клавиатуры для мобильных устройств: ввод только цифр, запятой и знака минус */
+            html += `<input type="text" class="text-input" id="${qId}" inputmode="decimal" pattern="[0-9,-]*" placeholder="Введите ответ" oninput="this.value = this.value.replace(/[^0-9,-]/g, ''); saveStateToStorage();">`;
           }
 
           html += `<div style="margin-top:12px;">`;
@@ -881,7 +924,7 @@
     let totalCorrect = 0;
     let totalQuestions = 0;
     
-    let summaryListHtml = "";
+    let summaryBlocksScreenHtml = "";
     let pdfSummaryBlocksHtml = "";
     let screenCardsHtml = "";
     let pdfCardsArray = [];
@@ -906,28 +949,35 @@
           let statusClass = "incorrect";
           let badgeStatus = "Ошибка ⚠️";
           let badgeClass = "badge-err";
+          let screenBadgeClass = "screen-badge-err";
 
           if (qDef.isCorrect) {
             statusClass = "correct";
             badgeStatus = "Верно ✅";
             badgeClass = "badge-ok";
+            screenBadgeClass = "screen-badge-ok";
           } else if (isSkipped) {
             statusClass = "skipped";
             badgeStatus = "Не решено ❌";
             badgeClass = "badge-skip";
+            screenBadgeClass = "screen-badge-skip";
           }
 
+          // Карточка для экрана ученика
           screenCardsHtml += `
             <div class="screen-card ${statusClass}">
-              <div class="screen-q">${qIndex}. ${qDef.q}</div>
+              <div class="screen-card-header">
+                <div class="screen-q">${qIndex}. ${qDef.q}</div>
+                <span class="screen-badge ${screenBadgeClass}">${badgeStatus}</span>
+              </div>
               <div class="screen-ans">
                 <b>Ответ ученика:</b> ${qDef.userText}<br>
                 <b>Правильный ответ:</b> ${qDef.correctText}
               </div>
-              <div><span class="badge ${badgeClass}" style="position:static;">${badgeStatus}</span></div>
             </div>
           `;
 
+          // Карточка для PDF (не менялась)
           pdfCardsArray.push(`
             <div class="pdf-card ${statusClass}">
               <div class="pdf-q">${qIndex}. ${qDef.q}</div>
@@ -955,13 +1005,16 @@
         colorClass = "yellow";
       }
 
-      summaryListHtml += `
-        <div class="screen-summary-block">
-          <h4>${block.block} (${blockCorrect} из ${blockTotal})</h4>
-          <ul>${themesHtml}</ul>
+      // Оформление блоков сводки для экранного отображения
+      summaryBlocksScreenHtml += `
+        <div class="screen-block-bar ${colorClass}">
+          <span>${block.block} (${blockCorrect} из ${blockTotal})</span>
+          <span class="screen-block-percent">${blockPercent}%</span>
         </div>
+        <ul class="screen-block-ul">${themesHtml}</ul>
       `;
 
+      // Оформление блоков сводки для PDF
       pdfSummaryBlocksHtml += `
         <div class="pdf-block-bar ${colorClass}">
           <span>${block.block}</span>
@@ -983,20 +1036,21 @@
         <div class="screen-score-badge">Результат: ${totalCorrect} из ${totalQuestions} (${percent}%)</div>
       </div>
       <h3 class="screen-section-title">Сводка по блокам знаний</h3>
-      ${summaryListHtml}
+      ${summaryBlocksScreenHtml}
       <h3 class="screen-section-title">Детализация ответов</h3>
       ${screenCardsHtml}
     `;
 
     document.getElementById("result-screen").innerHTML = screenResultHtml;
 
+    // Сборка PDF (без изменений)
     const pageSizes = [15, 14, 13];
     const totalPages = 1 + pageSizes.length;
 
     let pagesHtml = `
       <div class="pdf-page">
         <h1 class="pdf-header-title">Диагностическая карта знаний</h1>
-        <div class="pdf-header-subtitle">Ученик: ${escapeHtml(studentData.fullName)} • 11 класс (ЕГЭ Профиль)</div>
+        <div class="pdf-header-subtitle">Ученик: ${escapeHtml(studentData.fullName)} • 11 класс</div>
 
         <div>
           ${pdfSummaryBlocksHtml}
