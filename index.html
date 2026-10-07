@@ -64,10 +64,107 @@
     }
 
     /* Экран входа */
-    #auth-screen { text-align: center; padding: 20px 0; }
-    .auth-form { max-width: 400px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
-    .auth-input { padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1em; outline: none; box-sizing: border-box; }
-    .auth-input:focus { border-color: var(--primary-blue); }
+    #auth-screen { 
+      text-align: center; 
+      padding: 10px 0 20px 0; 
+    }
+
+    .mission-banner {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    .mission-banner .mission-title {
+      margin: 0 0 6px 0;
+      color: #0369a1;
+      font-size: 1.05em;
+      line-height: 1.45;
+    }
+    .mission-banner .mission-text {
+      margin: 0;
+      color: #0284c7;
+      font-size: 0.95em;
+      line-height: 1.4;
+    }
+
+    .auth-header {
+      margin-bottom: 25px;
+    }
+    .auth-header h2 {
+      color: var(--primary-dark);
+      font-size: 1.45em;
+      margin: 0 0 8px 0;
+    }
+    .auth-header p {
+      color: #64748b;
+      font-size: 1em;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .auth-form { 
+      max-width: 440px; 
+      margin: 0 auto; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 16px; 
+    }
+    .auth-field-group {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      gap: 6px;
+    }
+    .auth-field-group label {
+      font-weight: 600;
+      font-size: 0.9em;
+      color: #334155;
+    }
+    .auth-input { 
+      width: 100%;
+      padding: 12px 14px; 
+      border: 1px solid #cbd5e1; 
+      border-radius: 8px; 
+      font-size: 1em; 
+      outline: none; 
+      box-sizing: border-box; 
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .auth-input:focus { 
+      border-color: var(--primary-blue); 
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .email-hint {
+      font-size: 0.78em;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .btn-start {
+      background: var(--primary-blue);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background-color 0.2s;
+    }
+    .btn-start:hover {
+      background: #1d4ed8;
+    }
+
+    .infinity-heart-wrapper {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
     /* Памятка вверху теста и итоговая шапка */
     .top-instruction {
@@ -472,14 +569,71 @@
 <div class="container" id="main-container">
   <!-- Экран авторизации -->
   <div id="auth-screen">
-    <h2>Диагностическое тестирование по математике (11 класс)</h2>
-    <p style="color: #64748b; margin-bottom: 25px;">Заполните свои данные для начала прохождения теста:</p>
-    <div class="auth-form">
-      <input type="text" id="studentName" class="auth-input" placeholder="Имя" oninput="saveStateToStorage()" required>
-      <input type="tel" id="studentPhone" class="auth-input" placeholder="Номер телефона (например, +79991234567)" oninput="this.value = this.value.replace(/[^0-9+\s\-\(\)]/g, ''); saveStateToStorage();" required>
-      <input type="email" id="studentEmail" class="auth-input" placeholder="Почта куда придет отчет" oninput="saveStateToStorage()" required>
-      <button class="btn-check" style="font-size: 1.1em; padding: 12px;" onclick="startQuiz()">Начать тест</button>
+    
+    <!-- Блок миссии -->
+    <div class="mission-banner">
+      <p class="mission-title"><strong>Миссия Решай360.ру:</strong> превращаем сложные задачи в понятный алгоритм.</p>
+      <p class="mission-text">Тест покажет точную карту ваших знаний и поможет закрыть пробелы перед экзаменами.</p>
     </div>
+
+    <!-- Напутствие -->
+    <div class="auth-header">
+      <h2>Ваш потенциал бесконечен!</h2>
+      <p>Диагностика — это не экзамен и не оценка, а ваша точка старта.</p>
+    </div>
+
+    <!-- Форма ввода данных -->
+    <div class="auth-form">
+      <div class="auth-field-group">
+        <label for="studentName">Имя</label>
+        <input 
+          type="text" 
+          id="studentName" 
+          class="auth-input" 
+          placeholder="Имя" 
+          oninput="cleanNameInput(this); saveStateToStorage();" 
+          required
+        >
+      </div>
+
+      <div class="auth-field-group">
+        <label for="studentPhone">Номер телефона</label>
+        <input 
+          type="tel" 
+          id="studentPhone" 
+          class="auth-input" 
+          placeholder="+7 (900) 000-00-00" 
+          oninput="formatPhoneInput(this); saveStateToStorage();" 
+          required
+        >
+      </div>
+
+      <div class="auth-field-group">
+        <label for="studentEmail">Почта</label>
+        <input 
+          type="email" 
+          id="studentEmail" 
+          class="auth-input" 
+          placeholder="pochta@mail.ru" 
+          oninput="saveStateToStorage();" 
+          required
+        >
+        <div class="email-hint">*на эту почту мы отправим ваш отчет диагностики</div>
+      </div>
+
+      <button class="btn-start" onclick="startQuiz()">Начать тест</button>
+    </div>
+
+    <!-- Знак бесконечности с сердечком под формой -->
+    <div class="infinity-heart-wrapper">
+      <svg width="90" height="90" viewBox="0 0 100 100" fill="#000000" xmlns="http://www.w3.org/2000/svg">
+        <!-- Сердечко сверху -->
+        <path d="M50 25 C47 20, 40 12, 33 12 C25 12, 20 18, 20 25 C20 34, 34 43, 50 50 C66 43, 80 34, 80 25 C80 18, 75 12, 67 12 C60 12, 53 20, 50 25 Z" />
+        <!-- Символ бесконечности снизу -->
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M30 52 C17.8 52 8 60.5 8 71 C8 81.5 17.8 90 30 90 C40.2 90 48.9 83.5 50 78.2 C51.1 83.5 59.8 90 70 90 C82.2 90 92 81.5 92 71 C92 60.5 82.2 52 70 52 C59.8 52 51.1 58.5 50 63.8 C48.9 58.5 40.2 52 30 52 Z M30 60 C37.5 60 43.6 64.9 43.6 71 C43.6 77.1 37.5 82 30 82 C22.5 82 16.4 77.1 16.4 71 C16.4 64.9 22.5 60 30 60 Z M70 60 C77.5 60 83.6 64.9 83.6 71 C83.6 77.1 77.5 82 70 82 C62.5 82 56.4 77.1 56.4 71 C56.4 64.9 62.5 60 70 60 Z" />
+      </svg>
+    </div>
+
   </div>
 
   <!-- Экран теста -->
@@ -530,6 +684,30 @@
   window.addEventListener('resize', updateViewportHeight);
   window.addEventListener('orientationchange', updateViewportHeight);
   updateViewportHeight();
+
+  // Автоматическая маска и форматирование телефона
+  function formatPhoneInput(input) {
+    let digits = input.value.replace(/\D/g, '');
+    if (!digits) {
+      input.value = '';
+      return;
+    }
+    if (digits[0] === '8') digits = '7' + digits.substring(1);
+    if (digits[0] !== '7') digits = '7' + digits;
+
+    let formatted = '+7';
+    if (digits.length > 1) formatted += ' (' + digits.substring(1, 4);
+    if (digits.length >= 5) formatted += ') ' + digits.substring(4, 7);
+    if (digits.length >= 8) formatted += '-' + digits.substring(7, 9);
+    if (digits.length >= 10) formatted += '-' + digits.substring(9, 11);
+
+    input.value = formatted;
+  }
+
+  // Очистка ввода имени от цифр и спецсимволов
+  function cleanNameInput(input) {
+    input.value = input.value.replace(/[^а-яА-ЯёЁa-zA-Z\s\-]/g, '');
+  }
 
   // Настройки Telegram бота
   const BOT_TOKEN = '8653464504:AAFpobQydaloxKuIojpyBaV84sHr1hy2HwE';
