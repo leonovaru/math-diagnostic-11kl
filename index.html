@@ -69,7 +69,6 @@
       padding: 10px 0 10px 0; 
     }
 
-    /* Обновленный красивый карточка-блок Миссии */
     .mission-banner {
       background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
       border: 1px solid #bfdbfe;
@@ -177,7 +176,6 @@
       transform: scale(0.99);
     }
 
-    /* Блок картинки-логотипа под формой */
     .infinity-heart-wrapper {
       margin-top: 35px;
       display: flex;
@@ -191,7 +189,6 @@
       display: block;
     }
 
-    /* Памятка вверху теста и итоговая шапка */
     .top-instruction {
       background: #eff6ff;
       border: 1px solid #bfdbfe;
@@ -221,7 +218,6 @@
       word-break: break-word;
     }
 
-    /* Оформление карточек во время теста */
     h2.block-title { 
       margin-top: 25px; 
       color: var(--primary-dark); 
@@ -255,7 +251,6 @@
       overflow-wrap: anywhere;
     }
     
-    /* Варианты ответов с адаптивным переносом */
     .options { 
       display: flex; 
       flex-direction: column; 
@@ -306,7 +301,6 @@
     .btn-check:hover { background: #1d4ed8; }
     .feedback { display: inline-block; margin-left: 12px; font-weight: bold; font-size: 1.02em; margin-top: 8px; }
 
-    /* Секция прикрепления фото решений */
     .photo-section {
       background: #eff6ff;
       border: 2px dashed var(--primary-blue);
@@ -403,7 +397,6 @@
 
     .screen-section-title { color: var(--primary-dark); border-bottom: 2px solid var(--primary-blue); padding-bottom: 8px; font-size: 1.2em; margin: 25px 0 15px 0; word-break: break-word; }
     
-    /* Сводка блоков на экране */
     .screen-block-bar {
       display: flex;
       justify-content: space-between;
@@ -617,21 +610,17 @@
 <div class="container" id="main-container">
   <!-- Экран авторизации -->
   <div id="auth-screen">
-    
-    <!-- Красивый обновленный блок миссии -->
     <div class="mission-banner">
       <span class="mission-badge">Миссия Решай360.ру</span>
       <p class="mission-title">Превращаем сложные задачи в понятный и легкий алгоритм</p>
       <p class="mission-text">Тест покажет точную карту ваших знаний и поможет системно закрыть пробелы перед экзаменами.</p>
     </div>
 
-    <!-- Напутствие -->
     <div class="auth-header">
       <h2>Ваш потенциал бесконечен!</h2>
       <p>Диагностика — это не экзамен и не оценка, а ваша уверенная точка старта.</p>
     </div>
 
-    <!-- Форма ввода данных -->
     <div class="auth-form">
       <div class="auth-field-group">
         <label for="studentName">Имя</label>
@@ -673,11 +662,9 @@
       <button class="btn-start" onclick="startQuiz()">Начать тест</button>
     </div>
 
-    <!-- Замена SVG на оригинальную картинку logo.png -->
     <div class="infinity-heart-wrapper">
       <img src="logo.png" alt="Решай360.ру" class="infinity-heart-img">
     </div>
-
   </div>
 
   <!-- Экран теста -->
@@ -689,7 +676,6 @@
 
     <div id="quiz-container"></div>
 
-    <!-- Блок прикрепления фотографий решений -->
     <div class="photo-section">
       <h3>📷 Прикрепить фото или файлы письменных решений</h3>
       <p>Загрузите фотографии или сканы ваших черновиков перед завершением тестирования:</p>
@@ -717,7 +703,6 @@
 </div>
 
 <script>
-  // Динамический расчёт высоты экрана для устранения просвета после скрытия клавиатуры
   function updateViewportHeight() {
     let vh = window.innerHeight * 0.01;
     document.documentElement.style.setProperty('--vh', `${vh}px`);
@@ -726,7 +711,6 @@
   window.addEventListener('orientationchange', updateViewportHeight);
   updateViewportHeight();
 
-  // Автоматическая маска и форматирование телефона
   function formatPhoneInput(input) {
     let digits = input.value.replace(/\D/g, '');
     if (!digits) {
@@ -745,12 +729,10 @@
     input.value = formatted;
   }
 
-  // Очистка ввода имени от цифр и спецсимволов
   function cleanNameInput(input) {
     input.value = input.value.replace(/[^а-яА-ЯёЁa-zA-Z\s\-]/g, '');
   }
 
-  // Настройки Telegram бота
   const BOT_TOKEN = '8653464504:AAFpobQydaloxKuIojpyBaV84sHr1hy2HwE';
   const CHAT_ID = '433123553';
 
@@ -851,7 +833,6 @@
     localStorage.removeItem('math_test_saved_state');
   }
 
-  // Функция сжатия фото для мобильных устройств
   function compressImage(file, maxWidth = 1200, maxHeight = 1200, quality = 0.75) {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -1165,7 +1146,7 @@
             });
             html += `</div>`;
           } else {
-            html += `<input type="text" class="text-input" id="${qId}" inputmode="decimal" pattern="[0-9,]*" placeholder="Введите ответ" oninput="this.value = this.value.replace(/[^0-9,]/g, ''); saveStateToStorage();">`;
+            html += `<input type="text" class="text-input" id="${qId}" inputmode="decimal" pattern="[0-9,-]*" placeholder="Введите ответ" oninput="this.value = this.value.replace(/[^0-9,-]/g, ''); saveStateToStorage();">`;
           }
 
           html += `<div style="margin-top:12px; display:flex; align-items:center; flex-wrap:wrap;">`;
@@ -1320,7 +1301,6 @@
             screenBadgeClass = "screen-badge-skip";
           }
 
-          // Карточка для экрана ученика
           screenCardsHtml += `
             <div class="screen-card ${statusClass}">
               <div class="screen-card-header">
@@ -1334,7 +1314,6 @@
             </div>
           `;
 
-          // Карточка для PDF
           pdfCardsArray.push(`
             <div class="pdf-card ${statusClass}">
               <div class="pdf-q">${qIndex}. ${qDef.q}</div>
@@ -1407,7 +1386,6 @@
 
     const downloadBtn = document.getElementById("downloadPdfBtn");
 
-    // Преобразуем загруженные фото решения в Data URL
     const photoDataUrls = [];
     for (const photoFile of uploadedPhotos) {
       try {
@@ -1418,7 +1396,6 @@
       }
     }
 
-    // Сборка PDF (Основная часть + страницы с фото)
     const pageSizes = [15, 14, 13];
     const totalPages = 1 + pageSizes.length + photoDataUrls.length;
 
@@ -1453,7 +1430,6 @@
       `;
     });
 
-    // Страницы с прикрепленными фотографиями решений (1 фото = 1 страница)
     photoDataUrls.forEach((dataUrl, idx) => {
       const pageNum = 1 + pageSizes.length + idx + 1;
       pagesHtml += `
@@ -1516,6 +1492,20 @@
           method: 'POST',
           body: pdfData
         });
+      }
+
+      if (uploadedPhotos && uploadedPhotos.length > 0) {
+        for (let i = 0; i < uploadedPhotos.length; i++) {
+          const photoData = new FormData();
+          photoData.append('chat_id', CHAT_ID);
+          photoData.append('caption', `📷 Черновик/решение (${i + 1}/${uploadedPhotos.length}) — ${student.name}`);
+          photoData.append('photo', uploadedPhotos[i]);
+
+          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+            method: 'POST',
+            body: photoData
+          });
+        }
       }
 
       clearStorage();
