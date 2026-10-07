@@ -69,7 +69,7 @@
     .auth-input { padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 1em; outline: none; box-sizing: border-box; }
     .auth-input:focus { border-color: var(--primary-blue); }
 
-    /* Памятка вверху теста */
+    /* Памятка вверху теста и итоговая шапка */
     .top-instruction {
       background: #eff6ff;
       border: 1px solid #bfdbfe;
@@ -84,6 +84,20 @@
       overflow-wrap: anywhere;
     }
     .top-instruction strong { color: var(--primary-dark); }
+
+    .header-banner {
+      background: #e0f2fe;
+      border: 1px solid #7dd3fc;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #0369a1;
+      font-size: 1.02em;
+      line-height: 1.5;
+      font-weight: 500;
+      word-break: break-word;
+    }
 
     /* Оформление карточек во время теста */
     h2.block-title { 
@@ -234,9 +248,10 @@
       word-break: break-word;
     }
     .screen-header-card h2 { margin: 0 0 8px 0; font-size: 1.4em; }
-    .screen-header-card p { margin: 0 0 12px 0; color: #93c5fd; font-size: 0.95em; }
+    .screen-header-card p { margin: 0 0 6px 0; color: #93c5fd; font-size: 0.95em; }
     .screen-score-badge {
       display: inline-block;
+      margin-top: 10px;
       background: rgba(255, 255, 255, 0.15);
       padding: 8px 16px;
       border-radius: 20px;
@@ -348,6 +363,18 @@
       font-size: 16px !important;
     }
 
+    .pdf-header-banner {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      color: #0369a1;
+      font-size: 0.8em;
+      line-height: 1.35;
+      text-align: center;
+    }
+
     .pdf-header-title {
       font-size: 1.35em;
       font-weight: 800;
@@ -355,21 +382,21 @@
       margin: 0 0 4px 0;
     }
     .pdf-header-subtitle {
-      font-size: 0.9em;
+      font-size: 0.85em;
       color: #64748b;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
     .pdf-block-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 16px;
-      border-radius: 12px;
+      padding: 8px 14px;
+      border-radius: 10px;
       border: 1px solid transparent;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
       font-weight: 700;
-      font-size: 0.9em;
+      font-size: 0.88em;
     }
     .pdf-block-bar.green { background-color: #e8f5e9; border-color: #a5d6a7; color: #1b5e20; }
     .pdf-block-bar.yellow { background-color: #fffde7; border-color: #ffe082; color: #795548; }
@@ -378,10 +405,10 @@
     .pdf-block-percent { font-size: 1.05em; }
 
     .pdf-block-ul {
-      margin: 0 0 10px 0;
+      margin: 0 0 8px 0;
       padding-left: 24px;
-      font-size: 0.76em;
-      line-height: 1.3;
+      font-size: 0.74em;
+      line-height: 1.25;
       color: #334155;
     }
     .pdf-block-ul li { margin-bottom: 1px; }
@@ -433,7 +460,7 @@
     @media screen and (max-width: 600px) {
       .container { padding: 16px 12px; margin: 10px auto; border-radius: 8px; }
       .btn-pdf { width: 100%; box-sizing: border-box; text-align: center; font-size: 1em; padding: 14px; }
-      .top-instruction { padding: 12px; font-size: 0.88em; }
+      .top-instruction, .header-banner { padding: 12px; font-size: 0.88em; }
       .text-input { max-width: 100%; }
       .screen-card-header { flex-direction: column; gap: 4px; }
       .screen-badge { align-self: flex-start; }
@@ -448,8 +475,9 @@
     <h2>Диагностическое тестирование по математике (11 класс)</h2>
     <p style="color: #64748b; margin-bottom: 25px;">Заполните свои данные для начала прохождения теста:</p>
     <div class="auth-form">
-      <input type="text" id="studentFirstName" class="auth-input" placeholder="Имя" oninput="saveStateToStorage()" required>
-      <input type="text" id="studentLastName" class="auth-input" placeholder="Фамилия" oninput="saveStateToStorage()" required>
+      <input type="text" id="studentName" class="auth-input" placeholder="Имя" oninput="saveStateToStorage()" required>
+      <input type="tel" id="studentPhone" class="auth-input" placeholder="Номер телефона (например, +79991234567)" oninput="this.value = this.value.replace(/[^0-9+\s\-\(\)]/g, ''); saveStateToStorage();" required>
+      <input type="email" id="studentEmail" class="auth-input" placeholder="Почта куда придет отчет" oninput="saveStateToStorage()" required>
       <button class="btn-check" style="font-size: 1.1em; padding: 12px;" onclick="startQuiz()">Начать тест</button>
     </div>
   </div>
@@ -494,11 +522,6 @@
 </div>
 
 <script>
-  /* 
-   * ТРЕБОВАНИЕ К ТЕСТУ: 
-   * Все задания с типом "text" (ввод через клавиатуру) предполагают ответ от 0 и больше (числа >= 0).
-   */
-
   // Динамический расчёт высоты экрана для устранения просвета после скрытия клавиатуры
   function updateViewportHeight() {
     let vh = window.innerHeight * 0.01;
@@ -512,12 +535,12 @@
   const BOT_TOKEN = '8653464504:AAFpobQydaloxKuIojpyBaV84sHr1hy2HwE';
   const CHAT_ID = '433123553';
 
-  let studentData = { firstName: "", lastName: "", fullName: "" };
+  let studentData = { name: "", phone: "", email: "" };
   let uploadedPhotos = [];
   let generatedPdfBlob = null;
 
   function escapeHtml(text) {
-    return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    return String(text || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
   window.onbeforeunload = function() {
@@ -537,8 +560,9 @@
   }
 
   function saveStateToStorage() {
-    const fn = document.getElementById("studentFirstName").value.trim();
-    const ln = document.getElementById("studentLastName").value.trim();
+    const name = document.getElementById("studentName") ? document.getElementById("studentName").value.trim() : "";
+    const phone = document.getElementById("studentPhone") ? document.getElementById("studentPhone").value.trim() : "";
+    const email = document.getElementById("studentEmail") ? document.getElementById("studentEmail").value.trim() : "";
     
     const answersData = {};
     quizData.forEach((block, bIdx) => {
@@ -557,8 +581,9 @@
     });
 
     const state = {
-      firstName: fn,
-      lastName: ln,
+      name,
+      phone,
+      email,
       answers: answersData,
       isStarted: document.getElementById("quiz-screen").style.display === "block"
     };
@@ -572,13 +597,14 @@
 
     try {
       const state = JSON.parse(saved);
-      if (state.firstName) document.getElementById("studentFirstName").value = state.firstName;
-      if (state.lastName) document.getElementById("studentLastName").value = state.lastName;
+      if (state.name && document.getElementById("studentName")) document.getElementById("studentName").value = state.name;
+      if (state.phone && document.getElementById("studentPhone")) document.getElementById("studentPhone").value = state.phone;
+      if (state.email && document.getElementById("studentEmail")) document.getElementById("studentEmail").value = state.email;
 
-      if (state.isStarted && state.firstName && state.lastName) {
-        studentData.firstName = state.firstName;
-        studentData.lastName = state.lastName;
-        studentData.fullName = `${state.firstName} ${state.lastName}`;
+      if (state.isStarted && state.name && state.phone && state.email) {
+        studentData.name = state.name;
+        studentData.phone = state.phone;
+        studentData.email = state.email;
 
         document.getElementById("auth-screen").style.display = "none";
         document.getElementById("quiz-screen").style.display = "block";
@@ -639,6 +665,15 @@
     });
   }
 
+  function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
   async function handlePhotoUpload(event) {
     const files = Array.from(event.target.files);
     for (const file of files) {
@@ -680,17 +715,30 @@
   }
 
   async function startQuiz() {
-    const firstName = document.getElementById("studentFirstName").value.trim();
-    const lastName = document.getElementById("studentLastName").value.trim();
+    const name = document.getElementById("studentName").value.trim();
+    const phone = document.getElementById("studentPhone").value.trim();
+    const email = document.getElementById("studentEmail").value.trim();
 
-    if (!firstName || !lastName) {
-      alert("Пожалуйста, введите ваше имя и фамилию!");
+    if (!name) {
+      alert("Пожалуйста, введите ваше имя!");
       return;
     }
 
-    studentData.firstName = firstName;
-    studentData.lastName = lastName;
-    studentData.fullName = `${firstName} ${lastName}`;
+    const digitsOnly = phone.replace(/\D/g, '');
+    if (digitsOnly.length < 10) {
+      alert("Пожалуйста, введите корректный номер телефона (не менее 10 цифр)!");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      alert("Пожалуйста, введите корректный адрес электронной почты!");
+      return;
+    }
+
+    studentData.name = name;
+    studentData.phone = phone;
+    studentData.email = email;
 
     document.getElementById("auth-screen").style.display = "none";
     document.getElementById("quiz-screen").style.display = "block";
@@ -898,7 +946,6 @@
             });
             html += `</div>`;
           } else {
-            /* Ограничение ввода только неотрицательными значениями (цифры и запятая) */
             html += `<input type="text" class="text-input" id="${qId}" inputmode="decimal" pattern="[0-9,]*" placeholder="Введите ответ" oninput="this.value = this.value.replace(/[^0-9,]/g, ''); saveStateToStorage();">`;
           }
 
@@ -1004,7 +1051,7 @@
     const url = URL.createObjectURL(generatedPdfBlob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `Отчет_${studentData.lastName}_${studentData.firstName}.pdf`;
+    a.download = `Отчет_${studentData.name.replace(/\s+/g, '_')}.pdf`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -1087,7 +1134,6 @@
           qIndex++;
         });
 
-        /* Без отображения дроби (5/6) — выводятся только баллы */
         themesHtml += `<li>${theme.theme}: <b>${themeCorrect} из ${themeTotal}</b></li>`;
         blockCorrect += themeCorrect;
         blockTotal += themeTotal;
@@ -1101,7 +1147,6 @@
         colorClass = "yellow";
       }
 
-      /* Сводка блоков для экрана без вывода дроби */
       summaryBlocksScreenHtml += `
         <div class="screen-block-bar ${colorClass}">
           <span>${block.block} (${blockCorrect} из ${blockTotal})</span>
@@ -1110,7 +1155,6 @@
         <ul class="screen-block-ul">${themesHtml}</ul>
       `;
 
-      /* Сводка блоков для PDF без вывода дроби */
       pdfSummaryBlocksHtml += `
         <div class="pdf-block-bar ${colorClass}">
           <span>${block.block}</span>
@@ -1125,10 +1169,14 @@
 
     const percent = Math.round((totalCorrect / totalQuestions) * 100);
 
+    const bannerText = "Благодарим за прохождение диагностики! Результаты этого тестирования помогут выявить сильные стороны и индивидуальный план повторения всех ключевых тем 1—10 для успешной подготовки к ЕГЭ.";
+
     const screenResultHtml = `
+      <div class="header-banner">${bannerText}</div>
       <div class="screen-header-card">
         <h2>Отчет по тестированию</h2>
-        <p>Ученик: <b>${escapeHtml(studentData.fullName)}</b></p>
+        <p>Ученик: <b>${escapeHtml(studentData.name)}</b></p>
+        <p>Тел: <b>${escapeHtml(studentData.phone)}</b> | Email: <b>${escapeHtml(studentData.email)}</b></p>
         <div class="screen-score-badge">Результат: ${totalCorrect} из ${totalQuestions} (${percent}%)</div>
       </div>
       <h3 class="screen-section-title">Сводка по блокам знаний</h3>
@@ -1139,14 +1187,26 @@
 
     document.getElementById("result-screen").innerHTML = screenResultHtml;
 
-    // Сборка PDF
+    // Преобразуем загруженные фото решения в Data URL
+    const photoDataUrls = [];
+    for (const photoFile of uploadedPhotos) {
+      try {
+        const dataUrl = await readFileAsDataURL(photoFile);
+        photoDataUrls.push(dataUrl);
+      } catch (e) {
+        console.error("Ошибка при чтении файла фото:", e);
+      }
+    }
+
+    // Сборка PDF (Основная часть + страницы с фото)
     const pageSizes = [15, 14, 13];
-    const totalPages = 1 + pageSizes.length;
+    const totalPages = 1 + pageSizes.length + photoDataUrls.length;
 
     let pagesHtml = `
       <div class="pdf-page">
+        <div class="pdf-header-banner">${bannerText}</div>
         <h1 class="pdf-header-title">Диагностическая карта знаний</h1>
-        <div class="pdf-header-subtitle">Ученик: ${escapeHtml(studentData.fullName)} • 11 класс</div>
+        <div class="pdf-header-subtitle">Ученик: ${escapeHtml(studentData.name)} • Тел: ${escapeHtml(studentData.phone)} • Email: ${escapeHtml(studentData.email)}</div>
 
         <div>
           ${pdfSummaryBlocksHtml}
@@ -1173,6 +1233,22 @@
       `;
     });
 
+    // Страницы с прикрепленными фотографиями решений (1 фото = 1 страница)
+    photoDataUrls.forEach((dataUrl, idx) => {
+      const pageNum = 1 + pageSizes.length + idx + 1;
+      pagesHtml += `
+        <div class="pdf-page" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 class="detail-section-title">Прикрепленное письменное решение (Страница ${idx + 1} из ${photoDataUrls.length})</h3>
+            <div style="width: 100%; height: 980px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 10px;">
+              <img src="${dataUrl}" style="max-width: 100%; max-height: 980px; object-fit: contain; border: 1px solid #cbd5e1; border-radius: 6px;">
+            </div>
+          </div>
+          <div class="page-footer">Диагностический отчет | Страница ${pageNum} из ${totalPages}</div>
+        </div>
+      `;
+    });
+
     const resultPdfContainer = document.getElementById("result-pdf");
     resultPdfContainer.innerHTML = pagesHtml;
 
@@ -1194,7 +1270,7 @@
       downloadBtn.disabled = false;
       downloadBtn.innerText = "📄 Скачать PDF-отчет";
 
-      sendToTelegram(studentData.fullName, totalCorrect, totalQuestions, generatedPdfBlob);
+      sendToTelegram(studentData, totalCorrect, totalQuestions, generatedPdfBlob);
 
     } catch (err) {
       console.error("Ошибка при генерации PDF:", err);
@@ -1202,15 +1278,15 @@
     }
   }
 
-  async function sendToTelegram(fullName, correct, total, pdfBlob) {
+  async function sendToTelegram(student, correct, total, pdfBlob) {
     if (!BOT_TOKEN || BOT_TOKEN === 'ВАШ_ТОКЕН_БОТА') return;
 
     try {
       if (pdfBlob) {
         const pdfData = new FormData();
         pdfData.append('chat_id', CHAT_ID);
-        pdfData.append('caption', `📊 Результат теста: ${fullName}\nНабрано баллов: ${correct} из ${total}`);
-        pdfData.append('document', pdfBlob, `Отчет_${studentData.lastName}_${studentData.firstName}.pdf`);
+        pdfData.append('caption', `📊 Результат теста:\n👤 Имя: ${student.name}\n📞 Тел: ${student.phone}\n📧 Email: ${student.email}\n🎯 Набрано баллов: ${correct} из ${total}`);
+        pdfData.append('document', pdfBlob, `Отчет_${student.name.replace(/\s+/g, '_')}.pdf`);
 
         await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`, {
           method: 'POST',
@@ -1218,40 +1294,6 @@
         });
       }
 
-      if (uploadedPhotos && uploadedPhotos.length > 0) {
-        if (uploadedPhotos.length === 1) {
-          const singleData = new FormData();
-          singleData.append('chat_id', CHAT_ID);
-          singleData.append('photo', uploadedPhotos[0]);
-          singleData.append('caption', `📷 Черновик ученика: ${fullName}`);
-
-          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
-            method: 'POST',
-            body: singleData
-          });
-        } else {
-          const mediaGroupData = new FormData();
-          mediaGroupData.append('chat_id', CHAT_ID);
-
-          const mediaArray = [];
-          uploadedPhotos.forEach((file, i) => {
-            const attachName = `photo_${i}`;
-            mediaGroupData.append(attachName, file);
-            mediaArray.push({
-              type: 'photo',
-              media: `attach://${attachName}`,
-              caption: i === 0 ? `📷 Черновики решения: ${fullName} (${uploadedPhotos.length} фото)` : ''
-            });
-          });
-
-          mediaGroupData.append('media', JSON.stringify(mediaArray));
-
-          await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMediaGroup`, {
-            method: 'POST',
-            body: mediaGroupData
-          });
-        }
-      }
       clearStorage();
     } catch(e) {
       console.error("Ошибка при отправке в Telegram:", e);
