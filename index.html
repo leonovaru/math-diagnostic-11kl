@@ -766,6 +766,17 @@
 
         theme.questions.forEach((qDef, qIdx) => {
           checkSingle(bIdx, tIdx, qIdx, true); 
+
+          // Если пользователь ввел ответ, но ни разу не нажимал «Проверить», гарантируем минимум 1 попытку и запись в историю
+          if (qDef.userText !== "Не введено" && qDef.userText !== "Не выбрано") {
+            if (!qDef.checkCount || qDef.checkCount === 0) {
+              qDef.checkCount = 1;
+            }
+            if (!qDef.attemptsHistory || qDef.attemptsHistory.length === 0) {
+              qDef.attemptsHistory = [qDef.userText];
+            }
+          }
+
           if (qDef.isCorrect) {
             themeCorrect++;
           }
@@ -843,7 +854,7 @@
         <div class="pdf-progress-row">
           <div class="pdf-progress-header">
             <span>${block.block}</span>
-            <span>${blockPercent}% (${blockCorrect}/${blockTotal})</span>
+            <span>${blockPercent}%</span>
           </div>
           <div class="pdf-progress-track">
             <div class="pdf-progress-fill ${fillClass}" style="width: ${blockPercent}%"></div>
@@ -909,7 +920,7 @@
         <div class="pdf-level-badge ${levelClass}">${levelText}</div>
       </div>
 
-      <div class="pdf-analytics-title">Аналитика освоения ключевых блоков</div>
+      <div class="pdf-analytics-title">Результат диагностики</div>
       <div>
         ${pdfAnalyticsRowsHtml}
       </div>
