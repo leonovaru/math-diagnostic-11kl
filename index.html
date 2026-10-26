@@ -189,6 +189,8 @@
       border-radius: 8px;
       padding: 10px 16px;
       margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     .pdf-score-main { font-size: 1.25em; font-weight: 800; color: #1b365d; }
     .pdf-level-badge {
@@ -214,12 +216,18 @@
     .pdf-progress-header {
       display: flex;
       justify-content: space-between;
+      align-items: center; /* Выравнивание по центру по вертикали */
       font-size: 0.9em;
       font-weight: 700;
       color: #1e293b;
       margin-bottom: 6px;
+      gap: 15px;
     }
     
+    .pdf-progress-header span:last-child {
+      white-space: nowrap; /* Защита от переноса процентов на новую строку */
+    }
+
     .pdf-progress-track {
       height: 12px;
       background: #e2e8f0;
