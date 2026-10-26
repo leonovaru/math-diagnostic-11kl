@@ -181,27 +181,14 @@
     }
 
     .pdf-score-card {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       background: #f8fafc;
       border: 1px solid #cbd5e1;
       border-radius: 8px;
-      padding: 10px 16px;
+      padding: 12px 16px;
       margin-bottom: 8px;
-      flex-wrap: wrap;
-      gap: 8px;
     }
+    .pdf-score-label { font-size: 0.85em; color: #64748b; margin-bottom: 2px; }
     .pdf-score-main { font-size: 1.25em; font-weight: 800; color: #1b365d; }
-    .pdf-level-badge {
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-weight: bold;
-      font-size: 0.82em;
-    }
-    .pdf-level-high { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
-    .pdf-level-mid { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
-    .pdf-level-low { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
     .pdf-analytics-title { font-size: 1em; font-weight: 700; color: #1b365d; margin-bottom: 6px; border-bottom: 2px solid #2563eb; padding-bottom: 3px; }
     
@@ -216,7 +203,7 @@
     .pdf-progress-header {
       display: flex;
       justify-content: space-between;
-      align-items: center; /* Выравнивание по центру по вертикали */
+      align-items: center;
       font-size: 0.9em;
       font-weight: 700;
       color: #1e293b;
@@ -225,7 +212,7 @@
     }
     
     .pdf-progress-header span:last-child {
-      white-space: nowrap; /* Защита от переноса процентов на новую строку */
+      white-space: nowrap;
     }
 
     .pdf-progress-track {
@@ -767,7 +754,7 @@
         theme.questions.forEach((qDef, qIdx) => {
           checkSingle(bIdx, tIdx, qIdx, true); 
 
-          // Если пользователь ввел ответ, но ни разу не нажимал «Проверить», гарантируем минимум 1 попытку и запись в историю
+          // Гарантируем учет попыток ввода, даже если кнопку «Проверить» не нажимали отдельно
           if (qDef.userText !== "Не введено" && qDef.userText !== "Не выбрано") {
             if (!qDef.checkCount || qDef.checkCount === 0) {
               qDef.checkCount = 1;
@@ -782,7 +769,6 @@
           }
 
           const isSkipped = (qDef.userText === "Не введено" || qDef.userText === "Не выбрано");
-          
           const isGuessedByBruteForce = (qDef.type === 'radio' && qDef.checkCount > 1);
 
           let statusClass = "incorrect";
@@ -868,19 +854,6 @@
 
     const percent = Math.round((totalCorrect / totalQuestions) * 100);
 
-    let levelText = "";
-    let levelClass = "";
-    if (percent >= 70) {
-      levelText = "Высокий уровень подготовки";
-      levelClass = "pdf-level-high";
-    } else if (percent >= 50) {
-      levelText = "Средняя подготовка (требуется проработка)";
-      levelClass = "pdf-level-mid";
-    } else {
-      levelText = "Критическая зона (требуется системное повторение)";
-      levelClass = "pdf-level-low";
-    }
-
     const topicsToRepeat = Array.from(topicsToRepeatSet);
     const topicsToStudy = Array.from(topicsToStudySet);
 
@@ -913,11 +886,8 @@
       <div class="pdf-header-subtitle">Ученик: ${escapeHtml(studentData.fullName)} • 11 класс • Дата: ${testDateStr}</div>
 
       <div class="pdf-score-card">
-        <div>
-          <div style="font-size: 0.85em; color: #64748b;">Итоговый результат</div>
-          <div class="pdf-score-main">${totalCorrect} из ${totalQuestions} (${percent}%)</div>
-        </div>
-        <div class="pdf-level-badge ${levelClass}">${levelText}</div>
+        <div class="pdf-score-label">Итоговый результат</div>
+        <div class="pdf-score-main">${totalCorrect} из ${totalQuestions} (${percent}%)</div>
       </div>
 
       <div class="pdf-analytics-title">Результат диагностики</div>
