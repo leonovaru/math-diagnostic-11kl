@@ -72,24 +72,37 @@
     .option-label input[type="radio"] { margin-top: 3px; flex-shrink: 0; }
     .option-label span { flex: 1; word-break: break-word; }
 
-    .text-input { width: 100%; max-width: 350px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1em; margin-top: 10px; box-sizing: border-box; }
+    /* Контейнер для поля ввода и компактной кнопки знака */
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 350px;
+      margin-top: 10px;
+    }
+    .text-input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1em; box-sizing: border-box; margin-top: 0; }
     .text-input:disabled { background-color: #e2e8f0; cursor: not-allowed; color: #475569; }
     
-    /* Быстрые кнопки ввода символов */
-    .quick-input-tools { display: flex; gap: 8px; margin-top: 8px; }
-    .btn-quick-symbol {
-      background: #e2e8f0;
-      color: #1e293b;
+    /* Компактная кнопка переключения плюса/минуса */
+    .btn-minus-toggle {
+      background: #f1f5f9;
+      color: #334155;
       border: 1px solid #cbd5e1;
-      padding: 6px 16px;
       border-radius: 6px;
+      width: 44px;
+      height: 42px;
       font-weight: bold;
       font-size: 1.1em;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: 0.15s;
+      flex-shrink: 0;
     }
-    .btn-quick-symbol:hover { background: #cbd5e1; }
-    .btn-quick-symbol:active { background: #94a3b8; color: #fff; }
+    .btn-minus-toggle:hover { background: #e2e8f0; border-color: #94a3b8; }
+    .btn-minus-toggle.active { background: var(--primary-blue); color: #fff; border-color: var(--primary-blue); }
+    .btn-minus-toggle:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; }
 
     .btn-check { background: var(--primary-blue); color: #fff; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 12px; transition: 0.2s; }
     .btn-check:hover { background: #1d4ed8; }
@@ -105,7 +118,7 @@
     mjx-container[jax="SVG"] { display: inline-block !important; margin: 0 2px !important; }
     mjx-container[jax="SVG"] svg { overflow: visible !important; vertical-align: middle !important; max-width: none !important; }
 
-    /* Убираем скрытый текстовый слой MathJax для исключения дублирования в PDF */
+    /* Предотвращение наложения слоев MathJax в PDF */
     mjx-assistive-mml, .mjx-assistive-mml { display: none !important; visibility: hidden !important; }
 
     /* ========================================================= */
@@ -308,7 +321,7 @@
   <div id="quiz-screen" style="display: block;">
     <div class="top-instruction">
       Решайте задания по порядку. Если ответ — десятичная дробь, используйте запятую (например, 2,5).<br>
-      <strong style="display: inline-block; margin-top: 6px;">📌 Чтобы ввести отрицательное значение, нажмите на кнопку «–» под полем ввода!</strong>
+      <strong style="display: inline-block; margin-top: 6px;">📌 Чтобы ввести отрицательное число, нажмите на кнопку «±» рядом с полем ввода.</strong>
     </div>
 
     <div id="quiz-container"></div>
@@ -344,18 +357,30 @@
     return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
 
-  function insertSymbol(qId, symbol) {
+  // Функция переключения знака плюс/минус
+  function toggleMinus(qId) {
     const input = document.getElementById(qId);
     if (!input || input.disabled) return;
     
-    const start = input.selectionStart ?? input.value.length;
-    const end = input.selectionEnd ?? input.value.length;
-    const text = input.value;
-    
-    input.value = text.slice(0, start) + symbol + text.slice(end);
-    input.focus();
-    const newPos = start + symbol.length;
-    input.setSelectionRange(newPos, newPos);
+    let val = input.value.trim();
+    if (val.startsWith('-')) {
+      input.value = val.substring(1);
+    } else {
+      input.value = '-' + val;
+    }
+    updateMinusBtnState(qId);
+  }
+
+  function updateMinusBtnState(qId) {
+    const input = document.getElementById(qId);
+    const btn = document.getElementById(`btn_toggle_${qId}`);
+    if (input && btn) {
+      if (input.value.trim().startsWith('-')) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    }
   }
 
   window.onbeforeunload = function() {
@@ -575,10 +600,9 @@
             });
             html += `</div>`;
           } else {
-            html += `<input type="text" class="text-input" id="${qId}" inputmode="decimal" placeholder="Введите ответ" oninput="this.value = this.value.replace(/[^0-9,\\-\\+\\*\\/]/g, '');">`;
-            html += `<div class="quick-input-tools">`;
-            html += `<button type="button" class="btn-quick-symbol" onclick="insertSymbol('${qId}', '-')">–</button>`;
-            html += `<button type="button" class="btn-quick-symbol" onclick="insertSymbol('${qId}', ',')">,</button>`;
+            html += `<div class="input-row">`;
+            html += `<input type="text" class="text-input" id="${qId}" inputmode="decimal" placeholder="Введите ответ" oninput="this.value = this.value.replace(/[^0-9,\\-\\+\\*\\/]/g, ''); updateMinusBtnState('${qId}');">`;
+            html += `<button type="button" class="btn-minus-toggle" id="btn_toggle_${qId}" onclick="toggleMinus('${qId}')" title="Изменить знак (+/−)">±</button>`;
             html += `</div>`;
           }
 
@@ -654,6 +678,8 @@
         } else {
           const inputEl = document.getElementById(qId);
           if (inputEl) inputEl.disabled = true;
+          const toggleBtn = document.getElementById(`btn_toggle_${qId}`);
+          if (toggleBtn) toggleBtn.disabled = true;
         }
 
         const btnEl = document.getElementById(`btn_${qId}`);
@@ -961,7 +987,6 @@
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
 
-    // Увеличенные задержки для стабильной отрисовки формул MathJax перед захватом в PDF
     await new Promise(resolve => setTimeout(resolve, 100));
     await safeTypeset(document.getElementById("result-screen"));
     await new Promise(resolve => setTimeout(resolve, 200));
