@@ -86,17 +86,17 @@
     .btn-pdf:disabled { background: #94a3b8; cursor: not-allowed; opacity: 0.8; box-shadow: none; }
 
     mjx-container[jax="SVG"] { display: inline-block !important; margin: 0 2px !important; }
-    mjx-container[jax="SVG"] svg { overflow: visible !important; vertical-align: middle !important; }
+    mjx-container[jax="SVG"] svg { overflow: visible !important; vertical-align: middle !important; max-width: none !important; }
 
     /* ========================================================= */
-    /* 1. ЭКРАННЫЙ ИНТЕРФЕЙС И PDF-ОТЧЕТ (ЕДИНЫЕ СТИЛИ)           */
+    /* 1. ЭКРАННЫЙ ИНТЕРФЕЙС И PDF-ОТЧЕТ                          */
     /* ========================================================= */
     #result-wrapper { max-width: 900px; margin: 20px auto; display: none; padding: 0 15px; box-sizing: border-box; }
     
     .screen-section-title { color: var(--primary-dark); border-bottom: 2px solid var(--primary-blue); padding-bottom: 8px; font-size: 1.25em; margin: 30px 0 15px 0; }
 
     /* ========================================================= */
-    /* 2. СКРЫТЫЙ СТРОГИЙ A4-МАКЕТ ДЛЯ PDF И ЭКРАНА РЕЗУЛЬТАТОВ  */
+    /* 2. СТРОГИЙ A4-МАКЕТ ДЛЯ PDF (СКРЫТЫЙ)                      */
     /* ========================================================= */
     #pdf-export-container {
       position: fixed;
@@ -121,6 +121,18 @@
       position: relative !important;
       overflow: hidden !important;
       font-size: 15px !important;
+    }
+
+    /* Адаптивность карты результатов на экране телефона */
+    #result-screen .pdf-page {
+      width: 100% !important;
+      max-width: 794px;
+      height: auto !important;
+      min-height: auto !important;
+      padding: 20px !important;
+      margin: 0 auto 20px auto !important;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border-radius: 12px;
     }
 
     .pdf-header-title {
@@ -198,7 +210,7 @@
       padding: 10px 12px;
       font-size: 0.72em;
       line-height: 1.35;
-      max-height: 290px;
+      max-height: 480px; /* Увеличено до 480px для отображения большего количества тем */
       overflow: hidden;
     }
     .pdf-topics-box.repeat {
@@ -529,8 +541,8 @@
             });
             html += `</div>`;
           } else {
-            // Разрешаем цифры, запятую, минус, плюс, умножение, деление
-            html += `<input type="text" class="text-input" id="${qId}" inputmode="text" placeholder="Введите ответ" oninput="this.value = this.value.replace(/[^0-9,\\-\\+\\*\\/]/g, '');">`;
+            // inputmode="decimal" вызывает цифровую клавиатуру с запятой и минусом на смартфонах
+            html += `<input type="text" class="text-input" id="${qId}" inputmode="decimal" placeholder="Введите ответ" oninput="this.value = this.value.replace(/[^0-9,\\-\\+\\*\\/]/g, '');">`;
           }
 
           html += `<div style="margin-top:12px;">`;
@@ -727,7 +739,6 @@
 
           const checkCountVal = qDef.checkCount || 0;
 
-          // Слово «История» заменено на «Ответ»
           const cardHtml = `
             <div class="pdf-card ${statusClass}">
               <div class="pdf-q">${qIndex}. ${qDef.q}</div>
@@ -836,7 +847,7 @@
     `;
 
     const screenResultHtml = `
-      <div class="pdf-page" style="position: relative; height: auto !important; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; margin-bottom: 25px;">
+      <div class="pdf-page" style="position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-radius: 12px; margin-bottom: 25px;">
         ${firstPageHtml}
       </div>
 
@@ -850,7 +861,7 @@
 
     document.getElementById("result-screen").innerHTML = screenResultHtml;
 
-    // Динамический расчет страниц для PDF с оптимизированным лимитом высоты (1000px)
+    // Динамический расчет страниц для PDF
     let measureContainer = document.createElement('div');
     measureContainer.style.cssText = 'position: fixed; top: 0; left: -9999px; width: 714px; visibility: hidden; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;';
     document.body.appendChild(measureContainer);
@@ -913,11 +924,12 @@
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
 
-    await new Promise(resolve => setTimeout(resolve, 50));
-    await safeTypeset(document.getElementById("result-screen"));
+    // Увеличенные задержки для стабильной отрисовки формул MathJax перед захватом в PDF
     await new Promise(resolve => setTimeout(resolve, 100));
+    await safeTypeset(document.getElementById("result-screen"));
+    await new Promise(resolve => setTimeout(resolve, 200));
     await safeTypeset(resultPdfContainer);
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await new Promise(resolve => setTimeout(resolve, 300));
 
     const downloadBtn = document.getElementById("downloadPdfBtn");
     try {
