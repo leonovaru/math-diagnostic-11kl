@@ -42,12 +42,22 @@
       border-radius: 8px;
       padding: 15px 20px;
       margin-bottom: 25px;
-      text-align: center;
       color: #334155;
       font-size: 0.95em;
-      line-height: 1.5;
+      line-height: 1.6;
     }
-    .top-instruction strong { color: var(--primary-dark); }
+    .top-instruction-title {
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 4px;
+    }
+    .top-instruction ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    .top-instruction li {
+      margin-bottom: 3px;
+    }
 
     /* Оформление карточек во время теста */
     h2.block-title { margin-top: 30px; color: var(--primary-dark); border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 1.3em; }
@@ -172,23 +182,35 @@
       font-size: 1.35em;
       font-weight: 800;
       color: #1b2a4a;
-      margin: 0 0 2px 0;
-    }
-    .pdf-header-subtitle {
-      font-size: 0.85em;
-      color: #64748b;
-      margin-bottom: 8px;
+      margin: 0 0 12px 0;
     }
 
+    /* Верхняя карточка с новой компоновкой (слева данные, справа результат) */
     .pdf-score-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       background: #f8fafc;
       border: 1px solid #cbd5e1;
       border-radius: 8px;
-      padding: 12px 16px;
-      margin-bottom: 8px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .pdf-student-info {
+      font-size: 0.95em;
+      color: #1e293b;
+      line-height: 1.5;
+    }
+    .pdf-student-info strong {
+      color: var(--primary-dark);
+    }
+    .pdf-score-right {
+      text-align: right;
     }
     .pdf-score-label { font-size: 0.85em; color: #64748b; margin-bottom: 2px; }
-    .pdf-score-main { font-size: 1.25em; font-weight: 800; color: #1b365d; }
+    .pdf-score-main { font-size: 1.3em; font-weight: 800; color: #1b365d; }
 
     .pdf-analytics-title { font-size: 1em; font-weight: 700; color: #1b365d; margin-bottom: 6px; border-bottom: 2px solid #2563eb; padding-bottom: 3px; }
     
@@ -258,7 +280,7 @@
     .pdf-topics-box ol { margin: 0; padding-left: 16px; }
     .pdf-topics-box li { margin-bottom: 2px; }
 
-    .detail-section-title { margin-top: 0; margin-bottom: 10px; color: var(--primary-dark); border-bottom: 2px solid var(--primary-blue); padding-bottom: 5px; font-size: 1.05em; }
+    .detail-section-title { margin-top: 0; margin-bottom: 10px; color: var(--primary-dark); border-bottom: 2px solid #2563eb; padding-bottom: 5px; font-size: 1.05em; }
 
     .pdf-card {
       background: #ffffff;
@@ -306,6 +328,7 @@
       .container { padding: 15px; margin: 10px auto; }
       .btn-pdf { width: 100%; box-sizing: border-box; text-align: center; font-size: 1em; padding: 14px; }
       .pdf-topics-container { flex-direction: column !important; }
+      .pdf-score-right { text-align: left; width: 100%; }
     }
   </style>
 </head>
@@ -315,8 +338,14 @@
   <!-- Экран теста -->
   <div id="quiz-screen" style="display: block;">
     <div class="top-instruction">
-      Решайте задания по порядку. Если ответ — десятичная дробь, используйте запятую (например, 2,5).<br>
-      <strong style="display: inline-block; margin-top: 6px;">📌 Чтобы ввести отрицательное число, нажмите на кнопку «±» рядом с полем ввода.</strong>
+      <div class="top-instruction-title">📋 Правила прохождения теста:</div>
+      <ul>
+        <li>Решайте задания самостоятельно и не пытайтесь угадывать ответы наугад.</li>
+        <li>Если в ответе получается десятичная дробь, используйте запятую (например, <strong>2,5</strong>).</li>
+        <li>Чтобы ввести отрицательное число, нажмите на кнопку <strong>«±»</strong> рядом с полем ввода.</li>
+        <li>Все ваши проверенные ответы и прогресс сохраняются.</li>
+        <li><strong>Важно:</strong> не закрывайте и не покидайте страницу во время прохождения теста, чтобы не потерять результаты.</li>
+      </ul>
     </div>
 
     <div id="quiz-container"></div>
@@ -883,11 +912,17 @@
 
     const firstPageHtml = `
       <h1 class="pdf-header-title">Диагностическая карта знаний</h1>
-      <div class="pdf-header-subtitle">Ученик: ${escapeHtml(studentData.fullName)} • 11 класс • Дата: ${testDateStr}</div>
 
       <div class="pdf-score-card">
-        <div class="pdf-score-label">Итоговый результат</div>
-        <div class="pdf-score-main">${totalCorrect} из ${totalQuestions} (${percent}%)</div>
+        <div class="pdf-student-info">
+          11 класс<br>
+          <strong>Ученик:</strong> ${escapeHtml(studentData.fullName)}<br>
+          Дата прохождения: ${testDateStr}
+        </div>
+        <div class="pdf-score-right">
+          <div class="pdf-score-label">Итоговый результат</div>
+          <div class="pdf-score-main">${totalCorrect} из ${totalQuestions} (${percent}%)</div>
+        </div>
       </div>
 
       <div class="pdf-analytics-title">Результат диагностики</div>
